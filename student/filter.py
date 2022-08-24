@@ -24,12 +24,18 @@ import misc.params as params
 class Filter:
     '''Kalman filter class'''
     def __init__(self):
-        pass
+        self.dt = params.dt
+        self.q = params.q
+        self.dim_state = params.dim_state
+        
 
     def F(self):
         ############
         # TODO Step 1: implement and return system matrix F
         ############
+
+        
+        
 
         return 0
         
@@ -52,8 +58,14 @@ class Filter:
         ############
         # TODO Step 1: predict state x and estimation error covariance P to next timestep, save x and P in track
         ############
-
-        pass
+        
+        
+        x_predict = self.F() * track.x
+        p_predict = self.F() * track.P * self.F().transpose() + self.Q()
+        
+        track.set_x(x_predict)
+        track.set_P(p_predict)
+        
         
         ############
         # END student code
@@ -64,6 +76,21 @@ class Filter:
         # TODO Step 1: update state x and covariance P with associated measurement, save x and P in track
         ############
         
+        
+        
+        H = meas.sensor.get_H(track.x)
+        gamma = self.gamma(track, meas)
+        S = self.S(track, meas, H)
+        I = np.identity(self.dim_state)
+        P = (I-K*H) * track.P
+        
+        # save x and P in track
+        track.set_x(x)
+        track.set_P(P)
+        track.update_attributes(meas)
+        
+        
+        
         ############
         # END student code
         ############ 
@@ -73,8 +100,10 @@ class Filter:
         ############
         # TODO Step 1: calculate and return residual gamma
         ############
+        
+        gamma_ = meas.z - meas.sensor.get_hx(track.x)
 
-        return 0
+        return gamma_
         
         ############
         # END student code
@@ -84,8 +113,10 @@ class Filter:
         ############
         # TODO Step 1: calculate and return covariance of residual S
         ############
+        
+        S_ = H*track.P*H.transpose() + meas.R
 
-        return 0
+        return S_
         
         ############
         # END student code
