@@ -91,7 +91,7 @@ class Sensor:
             pos_veh = np.ones((4, 1)) # homogeneous coordinates
             pos_veh[0:3] = x[0:3] 
             pos_sens = self.veh_to_sens*pos_veh # transform from vehicle to camera coordinates
-            
+            #print(self.veh_to_sens)
             
             hx = np.zeros((2,1))
             

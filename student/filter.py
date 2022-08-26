@@ -41,7 +41,7 @@ class Filter:
         F[0:dim_half, dim_half:self.dim_state] = np.identity(dim_half)*self.dt
         
 
-        return F
+        return np.matrix(F)
     
         
         ############
@@ -67,7 +67,7 @@ class Filter:
         
         #print(Q)
         
-        return Q
+        return np.matrix(Q)
         
         ############
         # END student code
@@ -108,7 +108,6 @@ class Filter:
         # save x and P in track
         track.set_x(x)
         track.set_P(P)
-        track.update_attributes(meas)
         
         
         ############
