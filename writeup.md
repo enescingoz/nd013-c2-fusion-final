@@ -32,6 +32,7 @@ Implement a single nearest neighbor data association to associate measurements t
 - Updated the list of unassigned measurements `unassigned_meas` and unassigned tracks `unassigned_tracks` to include the indices of all measurements and tracks that did not get associated.
 
 ![tracking](./img/tracking131.png)
+![rmse_step_4](./img/rmse_step-3.PNG)
 
 
 ## STEP - 4 - Implement the nonlinear camera measurement model
@@ -40,7 +41,6 @@ Implement a single nearest neighbor data association to associate measurements t
 - Transformed position estimate from vehicle to camera coordinates,
 - Projected from camera to image coordinates,
 - In the `Measurement` class, initialized camera measurement objects including `z`, `R`, and the sensor object `sensor`
-![rmse_step_4](./img/rmse_step-3.PNG)
 
 
 #### 2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)? 
