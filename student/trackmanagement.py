@@ -164,7 +164,7 @@ class Trackmanagement:
         ############
 
         
-        track.score += 1.3/params.window
+        track.score += 1.0/params.window
         
         if track.score >= params.confirmed_threshold:
             track.state = 'confirmed'
