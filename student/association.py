@@ -52,8 +52,8 @@ class Association:
             track = track_list[i]
             for j in range(M):
                 meas = meas_list[j]
-                dist = self.MHD(track, meas)
-                if self.gating(dist):
+                dist = self.MHD(track, meas, KF)
+                if self.gating(dist, meas.sensor):
                     self.association_matrix[i,j] = dist
                     
         
@@ -78,25 +78,26 @@ class Association:
         
 
         # get indices of minimum entry
-        ij_min = np.unravel_index(np.argmin(A, axis=None), self.association_matrix.shape) 
+        ij_min = np.unravel_index(np.argmin(A, axis=None), A.shape) 
         ind_track = ij_min[0]
         ind_meas = ij_min[1]
 
-        # delete row and column for next update
-        self.association_matrix = np.delete(self.association_matrix, ind_track, 0) 
-        self.association_matrix = np.delete(self.association_matrix, ind_meas, 1)
+        
+        # update this track with this measurement
+        update_track = self.unassigned_tracks[ind_track] 
+        update_meas = self.unassigned_meas[ind_meas]
         
         
         # remove this track and measurement from list
         self.unassigned_tracks.remove(update_track) 
         self.unassigned_meas.remove(update_meas)
         
-
-        # update this track with this measurement
-        update_track = self.unassigned_tracks[ind_track] 
-        update_meas = self.unassigned_meas[ind_meas]
-
         
+        # delete row and column for next update
+        self.association_matrix = np.delete(self.association_matrix, ind_track, 0) 
+        self.association_matrix = np.delete(self.association_matrix, ind_meas, 1)
+        
+
             
         ############
         # END student code
@@ -108,8 +109,13 @@ class Association:
         # TODO Step 3: return True if measurement lies inside gate, otherwise False
         ############
         
+        if sensor.name == "lidar":
+            DOF = 2 # LiDAR DOF, features = (x,y,z)
+        elif sensor.name == "camera":
+            DOF = 1 # camera DOF,features = (x,y)
         
-        limit = chi2.ppf(params.gating_threshold, df=sensor.dim_meas)
+        
+        limit = chi2.ppf(params.gating_threshold, df=DOF)
         
         if MHD < limit:
             return True

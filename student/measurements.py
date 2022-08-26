@@ -93,6 +93,16 @@ class Sensor:
             pos_sens = self.veh_to_sens*pos_veh # transform from vehicle to camera coordinates
             
             
+            hx = np.zeros((2,1))
+            
+            if pos_sens[0]==0:
+                raise NameError('can not divide by zero!')
+            else:
+                hx[0,0] = self.c_i - self.f_i*pos_sens[1]/pos_sens[0] # project to image coordinates
+                hx[1,0] = self.c_j - self.f_j*pos_sens[2]/pos_sens[0]
+            
+            
+            return hx   
             
         
             ############
@@ -181,11 +191,21 @@ class Measurement:
             ############
 
             
+            sigma_camera_x = params.sigma_cam_i 
+            sigma_camera_y = params.sigma_cam_j
             
             
+            self.sensor = sensor # sensor that generated this measurement
             
             
-        
+            self.z = np.zeros((sensor.dim_meas,1)) # measurement vector
+            self.z[0] = z[0]
+            self.z[1] = z[1]
+            
+            self.R = np.matrix([[sigma_camera_x**2, 0], # measurement noise covariance matrix
+                                [0, sigma_camera_y**2]])
+            
+            
             ############
             # END student code
             ############ 

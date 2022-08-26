@@ -35,9 +35,14 @@ class Filter:
         ############
 
         
+        dim_half = int(self.dim_state / 2)
+        
+        F = np.identity(self.dim_state)
+        F[0:dim_half, dim_half:self.dim_state] = np.identity(dim_half)*self.dt
         
 
-        return 0
+        return F
+    
         
         ############
         # END student code
@@ -48,7 +53,21 @@ class Filter:
         # TODO Step 1: implement and return process noise covariance Q
         ############
 
-        return 0
+        dim_half = int(self.dim_state / 2)
+        
+        dt_pow_three = np.power(self.dt, 3)/3
+        dt_pow_two = np.power(self.dt, 2)/2
+        
+        Q = np.zeros([self.dim_state, self.dim_state])
+        
+        Q[0:dim_half, 0:dim_half] = np.identity(dim_half)*dt_pow_three*self.q
+        Q[0:dim_half, dim_half:self.dim_state] = np.identity(dim_half)*dt_pow_two*self.q
+        Q[dim_half:self.dim_state, 0:dim_half] = np.identity(dim_half)*dt_pow_two*self.q
+        Q[dim_half:self.dim_state, dim_half:self.dim_state] = np.identity(dim_half)*self.dt*self.q
+        
+        #print(Q)
+        
+        return Q
         
         ############
         # END student code
@@ -77,18 +96,19 @@ class Filter:
         ############
         
         
-        
         H = meas.sensor.get_H(track.x)
         gamma = self.gamma(track, meas)
         S = self.S(track, meas, H)
+        K = track.P * H.transpose() * np.linalg.inv(S)
+        x = track.x + K * gamma
         I = np.identity(self.dim_state)
         P = (I-K*H) * track.P
+        
         
         # save x and P in track
         track.set_x(x)
         track.set_P(P)
         track.update_attributes(meas)
-        
         
         
         ############
@@ -114,7 +134,7 @@ class Filter:
         # TODO Step 1: calculate and return covariance of residual S
         ############
         
-        S_ = H*track.P*H.transpose() + meas.R
+        S_ = (H*track.P*H.transpose()) + meas.R
 
         return S_
         

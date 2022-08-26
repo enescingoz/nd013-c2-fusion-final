@@ -38,7 +38,7 @@ class Track:
         
         # transform measurement to vehicle coordinates
         pos_veh = np.ones((4, 1)) # homogeneous coordinates
-        pos_veh[0:3] = x[0:3] 
+        pos_veh[0:3] = meas.z[0:3] 
         pos_sens = meas.sensor.sens_to_veh*pos_veh
         
         
@@ -129,7 +129,8 @@ class Trackmanagement:
         # delete old tracks
         for track in self.track_list:
             if(track.score < params.delete_threshold):
-                self.delete_track(track)
+                if(track.state == 'initialized' or track.state == 'tentative') and (track.P[0, 0] > params.max_P or track.P[1, 1] > params.max_P):
+                    self.delete_track(track)
                 
 
         ############
@@ -166,7 +167,7 @@ class Trackmanagement:
         
         if track.score > params.confirmed_threshold:
             track.state = 'confirmed'
-        else if track.score > params.delete_threshold:
+        elif track.score > params.delete_threshold:
             track.state = 'tentative'
         
         
