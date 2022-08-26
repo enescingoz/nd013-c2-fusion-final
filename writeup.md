@@ -44,10 +44,18 @@ Implement a single nearest neighbor data association to associate measurements t
 
 
 #### 2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)? 
-
+In autonomous systems, it is certain that multiple sensors should be used to detect cars, cyclists, pedestrians robustly. Also it is certain that it will increase safety. With fusing sensor datas, it will mitigate sensor noises and detection errors. 
 
 #### 3. Which challenges will a sensor fusion system face in real-life scenarios? Did you see any of these challenges in the project?
+Extrinsics and intinsics calibraitons of sensor will highly effect the fusion results. Also finding a robust algorithm for all environments (i.e crowd places, different objects than labeled data etc.) will increase algorithm complexity.
 
+In this project, I had a hard time while implementing kalman filter equations.
 
 #### 4. Can you think of ways to improve your tracking results in the future?
+- Fine-tune parameterization. One idea would be to apply the standard deviation values for lidar. 
 
+- Implement a more advanced data association, e.g. Global Nearest Neighbor (GNN) or Joint Probabilistic Data Association (JPDA).
+
+- Adapt the Kalman filter to also estimate the object's width, length, and height, instead of simply using the unfiltered lidar detections as we did.
+
+- Use a non-linear motion model, e.g. a bicycle model, which is more appropriate for vehicle movement than our linear motion model, since a vehicle can only move forward or backward, not in any direction.
